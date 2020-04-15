@@ -1,0 +1,19 @@
+FROM node:lts-alpine 
+
+WORKDIR /opt/conjur-webcli
+
+COPY package.json /opt/conjur-webcli/
+
+RUN apk update && \
+    apk add --no-cache bash build-base ruby ruby-dev ruby-etc ruby-bigdecimal ruby-json jq  openssh-client net-tools ca-certificates curl nano git && \ 
+    npm install --save && \
+    gem install conjur-cli && \
+    apk del build-base ruby-dev && \
+    rm -rf /var/cache/apk/*
+
+COPY bin/oc /usr/local/bin
+
+EXPOSE 3000
+COPY . /opt/conjur-webcli/
+CMD node /opt/conjur-webcli/bin/www
+
